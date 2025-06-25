@@ -3,16 +3,11 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
 import {
   Upload,
   Search,
@@ -33,6 +28,8 @@ import {
   AlertCircle,
   X,
   Plus,
+  Sparkles,
+  ArrowUpRight,
 } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 
@@ -70,6 +67,41 @@ interface SearchFilters {
 }
 
 const API_BASE_URL = "http://localhost:8000"
+
+// Utility function to strip HTML tags and decode HTML entities
+const stripHtmlTags = (html: string): string => {
+  if (!html) return ""
+
+  // Remove HTML tags
+  let text = html.replace(/<[^>]*>/g, "")
+
+  // Decode common HTML entities
+  const htmlEntities: { [key: string]: string } = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+    "&nbsp;": " ",
+    "&hellip;": "...",
+    "&mdash;": "—",
+    "&ndash;": "–",
+    "&rsquo;": "'",
+    "&lsquo;": "'",
+    "&rdquo;": '"',
+    "&ldquo;": '"',
+  }
+
+  // Replace HTML entities
+  Object.keys(htmlEntities).forEach((entity) => {
+    text = text.replace(new RegExp(entity, "g"), htmlEntities[entity])
+  })
+
+  // Clean up extra whitespace
+  text = text.replace(/\s+/g, " ").trim()
+
+  return text
+}
 
 export default function ResumeJobMatcher() {
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -230,7 +262,11 @@ export default function ResumeJobMatcher() {
   }
 
   const addToSearchFilter = (type: keyof SearchFilters, value: string) => {
-    if (value.trim() && !searchFilters[type].includes(value.trim())) {
+    if (
+      value.trim() &&
+      Array.isArray(searchFilters[type]) &&
+      !(searchFilters[type] as string[]).includes(value.trim())
+    ) {
       setSearchFilters((prev) => ({
         ...prev,
         [type]: [...(prev[type] as string[]), value.trim()],
@@ -281,94 +317,113 @@ export default function ResumeJobMatcher() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen hero-gradient">
       {/* Header */}
-      <header className="border-b bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Briefcase className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Resume Parser & Job Matcher</h1>
+      <header className="glass-effect sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 glass-effect rounded-xl">
+              <Briefcase className="h-6 w-6 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-white">Resume Parser & Job Matcher</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}>
-              {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-          </div>
+          <button
+            className="modern-button-outline text-white"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          >
+            {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Find Your Perfect Job Match</h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+        <div className="text-center mb-16 animate-float">
+          <div className="flex items-center justify-center mb-6">
+            <Sparkles className="h-8 w-8 text-purple-400 mr-3" />
+            <h2 className="heading-xl text-gradient-primary">
+              UNLOCKING
+              <br />
+              CAREER OPPORTUNITIES
+            </h2>
+          </div>
+          <p className="body-lg text-gray-300 mb-8 max-w-2xl mx-auto">
             Upload your resume or search manually to discover job opportunities that match your skills and experience
           </p>
         </div>
 
         {/* Notifications */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center space-x-2">
-            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-            <span className="text-red-800 dark:text-red-200">{error}</span>
-            <Button variant="ghost" size="sm" onClick={() => setError(null)}>
+          <div className="mb-6 p-4 glass-effect border border-red-500/30 rounded-xl flex items-center space-x-2">
+            <AlertCircle className="h-5 w-5 text-red-400" />
+            <span className="text-red-200">{error}</span>
+            <button onClick={() => setError(null)} title="Close error notification" className="ml-auto text-red-400 hover:text-red-300">
               <X className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
         )}
 
         {success && (
-          <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center space-x-2">
-            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-            <span className="text-green-800 dark:text-green-200">{success}</span>
-            <Button variant="ghost" size="sm" onClick={() => setSuccess(null)}>
+          <div className="mb-6 p-4 glass-effect border border-green-500/30 rounded-xl flex items-center space-x-2">
+            <CheckCircle className="h-5 w-5 text-green-400" />
+            <span className="text-green-200">{success}</span>
+            <button onClick={() => setSuccess(null)} title="Close success notification" className="ml-auto text-green-400 hover:text-green-300">
               <X className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
         )}
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-            <TabsTrigger value="upload" className="flex items-center space-x-2">
-              <Upload className="h-4 w-4" />
-              <span>Upload Resume</span>
-            </TabsTrigger>
-            <TabsTrigger value="search" className="flex items-center space-x-2">
-              <Search className="h-4 w-4" />
-              <span>Manual Search</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center">
+            <div className="glass-effect p-2 rounded-2xl">
+              <TabsList className="bg-transparent">
+                <TabsTrigger
+                  value="upload"
+                  className="flex items-center space-x-2 text-white data-[state=active]:bg-white/20"
+                >
+                  <Upload className="h-4 w-4" />
+                  <span>Upload Resume</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="search"
+                  className="flex items-center space-x-2 text-white data-[state=active]:bg-white/20"
+                >
+                  <Search className="h-4 w-4" />
+                  <span>Manual Search</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
 
           {/* Resume Upload Tab */}
-          <TabsContent value="upload" className="space-y-6">
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <FileText className="h-5 w-5" />
-                  <span>Upload Your Resume</span>
-                </CardTitle>
-                <CardDescription>
+          <TabsContent value="upload" className="space-y-8">
+            <div className="tech-card max-w-3xl mx-auto">
+              <div className="text-center mb-8">
+                <div className="glass-effect p-4 rounded-2xl inline-block mb-6">
+                  <FileText className="h-12 w-12 text-white" />
+                </div>
+                <h3 className="heading-lg text-white mb-4">UPLOAD YOUR RESUME</h3>
+                <p className="body-md text-gray-300">
                   Upload your PDF resume to automatically extract skills and find matching jobs
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                </p>
+              </div>
+
+              <div className="space-y-8">
                 {/* File Upload Area */}
                 <div
-                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                    isDragOver
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                  className={`glass-effect border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
+                    isDragOver ? "border-purple-400 bg-purple-500/10" : "border-white/20 hover:border-white/40"
                   }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                 >
-                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {selectedFile ? selectedFile.name : "Drop your resume here"}
+                  <Upload className="h-16 w-16 text-gray-400 mx-auto mb-6" />
+                  <p className="heading-md text-white mb-2">
+                    {selectedFile ? selectedFile.name : "Drag & drop your resume here"}
                   </p>
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">or click to browse (PDF only, max 10MB)</p>
+                  <p className="body-md text-gray-400 mb-6">or click to browse (PDF only, max 10MB)</p>
                   <input
                     type="file"
                     accept=".pdf"
@@ -376,107 +431,125 @@ export default function ResumeJobMatcher() {
                     className="hidden"
                     id="resume-upload"
                   />
-                  <Button asChild variant="outline">
-                    <label htmlFor="resume-upload" className="cursor-pointer">
-                      Choose File
-                    </label>
-                  </Button>
+                  <label
+                    htmlFor="resume-upload"
+                    className="modern-button-outline text-white cursor-pointer inline-block"
+                  >
+                    Choose File
+                  </label>
                 </div>
 
                 {/* Upload Progress */}
                 {uploadProgress > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Uploading...</span>
-                      <span>{uploadProgress}%</span>
+                  <div className="glass-effect p-6 rounded-2xl space-y-3">
+                    <div className="w-full bg-gray-700 rounded-full h-3 mb-2">
+                      <div
+                        className="bg-purple-500 h-3 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
                     </div>
-                    <Progress value={uploadProgress} />
+                    <p className="text-white text-center">Uploading... {uploadProgress}%</p>
                   </div>
                 )}
 
                 {/* Job Limit Slider */}
-                <div className="space-y-2">
-                  <Label>Number of jobs to find: {jobLimit[0]}</Label>
+                <div className="glass-effect p-6 rounded-2xl space-y-4">
+                  <Label className="body-md font-semibold text-white">Number of jobs to find: </Label>
                   <Slider value={jobLimit} onValueChange={setJobLimit} max={50} min={5} step={5} className="w-full" />
+                  <span className="text-white">{jobLimit[0]}</span>
                 </div>
 
                 {/* Upload Button */}
-                <Button onClick={handleFileUpload} disabled={!selectedFile || isLoading} className="w-full" size="lg">
+                <button
+                  onClick={handleFileUpload}
+                  disabled={!selectedFile || isLoading}
+                  className="w-full modern-button text-white flex items-center justify-center space-x-3 animate-glow disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   {isLoading ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Parsing Resume...
+                      <span className="loader mr-2"></span> Uploading...
                     </>
                   ) : (
                     <>
-                      <FileText className="h-4 w-4 mr-2" />
-                      Parse Resume & Find Jobs
+                      <Upload className="h-5 w-5" /> <span>Upload & Match Jobs</span>
                     </>
                   )}
-                </Button>
-              </CardContent>
-            </Card>
+                </button>
+              </div>
+            </div>
           </TabsContent>
 
           {/* Manual Search Tab */}
           <TabsContent value="search" className="space-y-6">
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Search className="h-5 w-5" />
-                  <span>Manual Job Search</span>
-                </CardTitle>
-                <CardDescription>
+            <div className="tech-card max-w-2xl mx-auto">
+              <div className="text-center mb-8">
+                <div className="glass-effect p-4 rounded-2xl inline-block mb-6">
+                  <Search className="h-12 w-12 text-white" />
+                </div>
+                <h3 className="heading-lg text-white mb-4">MANUAL JOB SEARCH</h3>
+                <p className="body-md text-gray-300">
                   Enter your skills, technologies, and preferences to find matching jobs
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                </p>
+              </div>
+
+              <div className="space-y-6">
                 {/* Search Filters */}
                 {(["skills", "technologies", "job_titles", "industries"] as const).map((filterType) => (
-                  <div key={filterType} className="space-y-2">
-                    <Label className="capitalize">{filterType.replace("_", " ")}</Label>
-                    <div className="flex space-x-2">
-                      <Input
-                        placeholder={`Add ${filterType.replace("_", " ")}...`}
-                        value={currentInputType === filterType ? currentInput : ""}
-                        onChange={(e) => {
-                          setCurrentInput(e.target.value)
-                          setCurrentInputType(filterType)
-                        }}
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter") {
-                            addToSearchFilter(filterType, currentInput)
-                          }
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => addToSearchFilter(filterType, currentInput)}
-                        disabled={!currentInput.trim() || currentInputType !== filterType}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {searchFilters[filterType].map((item, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                  <div key={filterType} className="space-y-3">
+                    <Label className="body-md font-semibold text-white capitalize">
+                      {filterType.replace("_", " ")}
+                    </Label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {searchFilters[filterType].map((item) => (
+                        <span
+                          key={item}
+                          className="bg-purple-600 text-white px-3 py-1 rounded-full flex items-center space-x-2"
+                        >
                           <span>{item}</span>
                           <button
+                            type="button"
+                            title={`Remove ${item}`}
                             onClick={() => removeFromSearchFilter(filterType, item)}
-                            className="ml-1 hover:text-red-500"
+                            className="ml-1 text-white hover:text-gray-200"
                           >
                             <X className="h-3 w-3" />
                           </button>
-                        </Badge>
+                        </span>
                       ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={currentInputType === filterType ? currentInput : ""}
+                        onChange={(e) => {
+                          setCurrentInputType(filterType)
+                          setCurrentInput(e.target.value)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && currentInput.trim()) {
+                            addToSearchFilter(filterType, currentInput)
+                          }
+                        }}
+                        placeholder={`Add ${filterType}`}
+                        className="input bg-gray-800 text-white px-3 py-2 rounded-lg w-full"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => addToSearchFilter(filterType, currentInput)}
+                        disabled={!currentInput.trim() || currentInputType !== filterType}
+                        className="modern-button-outline text-white px-4 py-2 rounded-lg"
+                      >
+                        Add
+                      </button>
                     </div>
                   </div>
                 ))}
 
                 {/* Job Limit */}
-                <div className="space-y-2">
-                  <Label>Number of jobs to find: {searchFilters.limit}</Label>
+                <div className="space-y-3">
+                  <Label className="body-md font-semibold text-white">
+                    Number of jobs to find: {searchFilters.limit}
+                  </Label>
                   <Slider
                     value={[searchFilters.limit]}
                     onValueChange={(value) => setSearchFilters((prev) => ({ ...prev, limit: value[0] }))}
@@ -488,200 +561,148 @@ export default function ResumeJobMatcher() {
                 </div>
 
                 {/* Search Button */}
-                <Button onClick={handleManualSearch} disabled={isLoading} className="w-full" size="lg">
+                <button
+                  onClick={handleManualSearch}
+                  disabled={isLoading}
+                  className="w-full modern-button text-white flex items-center justify-center space-x-3 animate-glow disabled:opacity-50"
+                >
                   {isLoading ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Searching Jobs...
+                      <span className="loader mr-2"></span> Searching...
                     </>
                   ) : (
                     <>
-                      <Search className="h-4 w-4 mr-2" />
-                      Search Jobs
+                      <Search className="h-5 w-5" /> <span>Search Jobs</span>
                     </>
                   )}
-                </Button>
-              </CardContent>
-            </Card>
+                </button>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
 
         {/* Results Section */}
         {(jobs.length > 0 || resumeInfo) && (
-          <div className="mt-12 space-y-8">
-            <Separator />
-
+          <div className="mt-16 space-y-8">
             {/* Resume Analysis */}
             {resumeInfo && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="h-5 w-5" />
-                    <span>Resume Analysis</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                      <h4 className="font-semibold mb-2">Skills</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {resumeInfo.skills.map((skill, index) => (
-                          <Badge key={index} variant="outline">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Technologies</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {resumeInfo.technologies.map((tech, index) => (
-                          <Badge key={index} variant="secondary">
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Experience</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{resumeInfo.years_of_experience} years</p>
+              <div className="tech-card">
+                <div className="flex items-center mb-6">
+                  <FileText className="h-6 w-6 text-white mr-3" />
+                  <h3 className="heading-md text-white">RESUME ANALYSIS</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-3 text-gray-300">Skills</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {resumeInfo.skills.map((skill) => (
+                        <span key={skill} className="bg-purple-600 text-white px-3 py-1 rounded-full">{skill}</span>
+                      ))}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div>
+                    <h4 className="font-semibold mb-3 text-gray-300">Technologies</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {resumeInfo.technologies.map((tech) => (
+                        <span key={tech} className="bg-blue-600 text-white px-3 py-1 rounded-full">{tech}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-3 text-gray-300">Experience</h4>
+                    <p className="text-white">{resumeInfo.years_of_experience} years</p>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Jobs Results */}
             {jobs.length > 0 && (
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {/* Results Header */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Found {filteredJobs.length} Jobs</h3>
+                  <h3 className="heading-lg text-white">FOUND {filteredJobs.length} JOBS</h3>
 
-                  <div className="flex flex-wrap gap-2">
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-48">
-                        <SortAsc className="h-4 w-4 mr-2" />
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="relevance_score">Sort by Relevance</SelectItem>
-                        <SelectItem value="date_posted">Sort by Date</SelectItem>
-                        <SelectItem value="salary">Sort by Salary</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="glass-effect rounded-xl">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="px-4 py-2 text-white bg-gray-800 rounded-xl border-none outline-none"
+                      title="Sort jobs by"
+                    >
+                      <option value="relevance_score">Relevance</option>
+                      <option value="date_posted">Date Posted</option>
+                      <option value="salary">Salary</option>
+                    </select>
                   </div>
                 </div>
 
                 {/* Job Cards */}
-                <div className="grid gap-6">
+                <div className="grid gap-8">
                   {filteredJobs.map((job, index) => (
-                    <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="space-y-4">
-                          {/* Job Header */}
-                          <div className="flex flex-col sm:flex-row justify-between items-start space-y-2 sm:space-y-0">
-                            <div>
-                              <h4 className="text-xl font-semibold text-gray-900 dark:text-white">{job.position}</h4>
-                              <p className="text-lg text-gray-600 dark:text-gray-400">{job.company}</p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <div className="flex items-center space-x-1">
-                                <Star className="h-4 w-4 text-yellow-500" />
-                                <span className="font-medium">{(job.relevance_score * 100).toFixed(0)}%</span>
-                              </div>
-                              <Progress value={job.relevance_score * 100} className="w-20" />
-                            </div>
-                          </div>
-
-                          {/* Job Details */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                            <div className="flex items-center space-x-2">
-                              <DollarSign className="h-4 w-4 text-green-600" />
-                              <span>{job.salary}</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <MapPin className="h-4 w-4 text-blue-600" />
-                              <span>{job.location}</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Calendar className="h-4 w-4 text-gray-600" />
-                              <span>{new Date(job.date_posted).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-
-                          {/* Tags */}
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Technologies:
-                              </span>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {job.tags.map((tag, tagIndex) => (
-                                  <Badge key={tagIndex} variant="outline">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-
-                            {job.matched_keywords.length > 0 && (
-                              <div>
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Matched Keywords:
-                                </span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {job.matched_keywords.map((keyword, keywordIndex) => (
-                                    <Badge key={keywordIndex} variant="secondary">
-                                      {keyword}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Description */}
-                          <div>
-                            <p className="text-gray-600 dark:text-gray-400">
-                              {expandedJobs.has(index) ? job.description : `${job.description.substring(0, 200)}...`}
-                            </p>
-                            {job.description.length > 200 && (
-                              <Button variant="link" className="p-0 h-auto" onClick={() => toggleJobExpansion(index)}>
-                                {expandedJobs.has(index) ? "Read Less" : "Read More"}
-                              </Button>
-                            )}
-                          </div>
-
-                          {/* Actions */}
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            <Button asChild>
-                              <a href={job.apply_url} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Apply Now
-                              </a>
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Share2 className="h-4 w-4 mr-2" />
-                              Share
-                            </Button>
-                          </div>
+                    <div key={index} className={`tech-card hover:scale-[1.02] transition-all duration-300`}>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                        <div className="flex items-center gap-3 mb-2 md:mb-0">
+                          <span className="text-lg font-bold text-white">{job.position}</span>
+                          <span className="text-purple-400 font-semibold">@ {job.company}</span>
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="flex items-center gap-4">
+                          <span className="text-green-400 font-semibold">{job.salary}</span>
+                          <span className="text-blue-300">{job.location}</span>
+                          <span className="text-gray-400 flex items-center gap-1">
+                            <Calendar className="h-4 w-4" /> {new Date(job.date_posted).toLocaleDateString()}
+                          </span>
+                          <span className="flex items-center gap-1 text-yellow-400">
+                            <Star className="h-4 w-4" /> {Math.round(job.relevance_score * 100)}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {job.tags.map((tag) => (
+                          <span key={tag} className="bg-gray-700 text-white px-2 py-1 rounded-full text-xs">{tag}</span>
+                        ))}
+                        {job.matched_keywords.map((kw) => (
+                          <span key={kw} className="bg-pink-600 text-white px-2 py-1 rounded-full text-xs">{kw}</span>
+                        ))}
+                      </div>
+                      <div className="mb-2">
+                        <button
+                          className="text-purple-400 underline text-sm"
+                          onClick={() => toggleJobExpansion(index)}
+                        >
+                          {expandedJobs.has(index) ? "Hide Details" : "Show Details"}
+                        </button>
+                      </div>
+                      {expandedJobs.has(index) && (
+                        <div className="bg-gray-900/80 p-4 rounded-xl text-white mb-2">
+                          {stripHtmlTags(job.description)}
+                        </div>
+                      )}
+                      <div className="flex justify-end mt-2">
+                        <a
+                          href={job.apply_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="modern-button-outline text-white flex items-center space-x-2"
+                        >
+                          <span>Apply</span>
+                          <ArrowUpRight className="h-4 w-4" />
+                        </a>
+                      </div>
+                    </div>
                   ))}
                 </div>
 
                 {/* Export Options */}
                 <div className="flex justify-center space-x-4 pt-8">
-                  <Button variant="outline">
-                    <Download className="h-4 w-4 mr-2" />
-                    Export to PDF
-                  </Button>
-                  <Button variant="outline">
-                    <Download className="h-4 w-4 mr-2" />
-                    Export to CSV
-                  </Button>
+                  <button className="modern-button-outline text-white flex items-center space-x-2">
+                    <Download className="h-4 w-4" />
+                    <span>Export to PDF</span>
+                  </button>
+                  <button className="modern-button-outline text-white flex items-center space-x-2">
+                    <Download className="h-4 w-4" />
+                    <span>Export to CSV</span>
+                  </button>
                 </div>
               </div>
             )}
@@ -694,12 +715,12 @@ export default function ResumeJobMatcher() {
           (activeTab === "upload"
             ? selectedFile
             : Object.values(searchFilters).some((v) => (Array.isArray(v) ? v.length > 0 : false))) && (
-            <div className="text-center py-12">
-              <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No Jobs Found</h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Try adjusting your search criteria or upload a different resume
-              </p>
+            <div className="text-center py-16">
+              <div className="glass-effect p-6 rounded-2xl inline-block mb-6">
+                <Briefcase className="h-16 w-16 text-gray-400" />
+              </div>
+              <h3 className="heading-md text-white mb-4">NO JOBS FOUND</h3>
+              <p className="body-md text-gray-400">Try adjusting your search criteria or upload a different resume</p>
             </div>
           )}
       </div>
