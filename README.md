@@ -160,9 +160,6 @@ Frontend/
 ---
 
 ## Screenshots
-
-![Job Card Example](./Frontend/public/placeholder.jpg)
-
 ![App Screenshot](./Frontend/public/Resume-Parser-Job-Matcher.png)
 
 ---
