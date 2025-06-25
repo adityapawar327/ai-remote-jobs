@@ -15,6 +15,45 @@ A full-stack web application that allows users to upload their resume (PDF) or m
 
 ---
 
+## How to Clone & Run
+
+### 1. Clone the Repository
+```sh
+git clone https://github.com/adityapawar327/ai-remote-jobs.git
+cd ai-remote-jobs
+```
+
+### 2. Backend Setup
+- Install Python 3.8+
+- Install dependencies:
+  ```sh
+  pip install -r Backend/requirements.txt
+  ```
+- Start the backend server:
+  ```sh
+  python Backend/backend.py
+  ```
+  (Ensure it runs on `http://localhost:8000`)
+
+### 3. Frontend Setup
+- Install Node.js (18+ recommended)
+- Install dependencies:
+  ```sh
+  cd Frontend
+  pnpm install
+  # or
+  npm install
+  ```
+- Start the development server:
+  ```sh
+  pnpm dev
+  # or
+  npm run dev
+  ```
+- Visit [http://localhost:3000](http://localhost:3000)
+
+---
+
 ## Technologies Used
 
 ### Frontend
@@ -44,31 +83,29 @@ A full-stack web application that allows users to upload their resume (PDF) or m
 ## Tech Stack & Why We Use It
 
 ### Frontend
-
-| Logo | Technology | Why We Use It |
-|:----:|:-----------|:--------------|
-| ![Next.js](https://raw.githubusercontent.com/vercel/next.js/canary/examples/blog/public/nextjs-logo.svg) | **Next.js** | React framework for SSR, routing, and fast development. |
-| ![TypeScript](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg) | **TypeScript** | Adds static typing to JavaScript for safer, scalable code. |
-| ![Tailwind CSS](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg) | **Tailwind CSS** | Utility-first CSS for rapid, consistent UI styling. |
-| ![Shadcn/UI](https://avatars.githubusercontent.com/u/139895814?s=200&v=4) | **Shadcn/UI** | Prebuilt, accessible React UI components for fast prototyping. |
-| ![Lucide React](https://lucide.dev/logo.svg) | **Lucide React** | Open-source icon library for modern, customizable icons. |
-| ![React](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg) | **React** | Core UI library for building interactive interfaces. |
+| Technology     | Why We Use It                                                      |
+|:--------------|:-------------------------------------------------------------------|
+| Next.js       | React framework for SSR, routing, and fast development.            |
+| TypeScript    | Adds static typing to JavaScript for safer, scalable code.         |
+| Tailwind CSS  | Utility-first CSS for rapid, consistent UI styling.                |
+| Shadcn/UI     | Prebuilt, accessible React UI components for fast prototyping.     |
+| Lucide React  | Open-source icon library for modern, customizable icons.           |
+| React         | Core UI library for building interactive interfaces.               |
 
 ### Backend
-
-| Logo | Technology | Why We Use It |
-|:----:|:-----------|:--------------|
-| ![Python](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg) | **Python 3.8+** | Versatile language for rapid backend and data processing. |
-| ![FastAPI](https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png) | **FastAPI** | High-performance, easy-to-use API framework for Python. |
-| ![Uvicorn](https://www.uvicorn.org/static/uvicorn-2.svg) | **Uvicorn** | Lightning-fast ASGI server for running FastAPI apps. |
-| ![PyPDF2](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg) | **PyPDF2** | Extracts text from PDF resumes for parsing. |
-| ![LangChain](https://avatars.githubusercontent.com/u/139895814?s=200&v=4) | **LangChain** | LLM orchestration for text splitting, vector search, and AI. |
-| ![FAISS](https://avatars.githubusercontent.com/u/37088035?s=200&v=4) | **FAISS** | Efficient vector similarity search for job matching. |
-| ![OpenAI](https://seeklogo.com/images/O/openai-logo-8B9BFEDC26-seeklogo.com.png) | **OpenAI API** | Advanced NLP for resume parsing and embeddings. |
-| ![Requests](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg) | **Requests** | Simple HTTP library for API calls. |
-| ![dotenv](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg) | **python-dotenv** | Manages environment variables securely. |
-| ![Logging](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg) | **Logging** | Standard Python logging for debugging and monitoring. |
-| ![CORS](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg) | **CORS Middleware** | Enables secure cross-origin requests from frontend. |
+| Technology      | Why We Use It                                                    |
+|:---------------|:-----------------------------------------------------------------|
+| Python 3.8+     | Versatile language for rapid backend and data processing.        |
+| FastAPI         | High-performance, easy-to-use API framework for Python.          |
+| Uvicorn         | Lightning-fast ASGI server for running FastAPI apps.             |
+| PyPDF2          | Extracts text from PDF resumes for parsing.                      |
+| LangChain       | LLM orchestration for text splitting, vector search, and AI.     |
+| FAISS           | Efficient vector similarity search for job matching.             |
+| OpenAI API      | Advanced NLP for resume parsing and embeddings.                  |
+| Requests        | Simple HTTP library for API calls.                               |
+| python-dotenv   | Manages environment variables securely.                          |
+| Logging         | Standard Python logging for debugging and monitoring.            |
+| CORS Middleware | Enables secure cross-origin requests from frontend.              |
 
 ---
 
@@ -99,38 +136,6 @@ Frontend/
   tsconfig.json
   ...
 ```
-
----
-
-## How to Run
-
-### 1. Backend
-- Install Python 3.8+
-- Install dependencies:
-  ```sh
-  pip install -r requirements.txt
-  ```
-- Start the backend server:
-  ```sh
-  python backend.py
-  ```
-  (Ensure it runs on `http://localhost:8000`)
-
-### 2. Frontend
-- Install Node.js (18+ recommended)
-- Install dependencies:
-  ```sh
-  pnpm install
-  # or
-  npm install
-  ```
-- Start the development server:
-  ```sh
-  pnpm dev
-  # or
-  npm run dev
-  ```
-- Visit [http://localhost:3000](http://localhost:3000)
 
 ---
 
