@@ -66,7 +66,8 @@ interface SearchFilters {
   limit: number
 }
 
-const API_BASE_URL = "http://localhost:8000"
+// Use environment variable for API base URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
 
 // Utility function to strip HTML tags and decode HTML entities
 const stripHtmlTags = (html: string): string => {
@@ -316,6 +317,31 @@ export default function ResumeJobMatcher() {
     setExpandedJobs(newExpanded)
   }
 
+  const handleExport = (type: 'csv') => {
+    if (jobs.length === 0) return;
+
+    // CSV Export
+    const headers = ['Position', 'Company', 'Salary', 'Location', 'Date Posted', 'Relevance', 'Tags', 'Matched Keywords'];
+    const rows = jobs.map(job => [
+      job.position,
+      job.company,
+      job.salary,
+      job.location,
+      job.date_posted,
+      Math.round(job.relevance_score * 100) + '%',
+      job.tags.join('; '),
+      job.matched_keywords.join('; ')
+    ]);
+    const csvContent = [headers, ...rows].map(e => e.map(v => '"' + (v || '') + '"').join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'jobs.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen hero-gradient">
       {/* Header */}
@@ -325,7 +351,7 @@ export default function ResumeJobMatcher() {
             <div className="p-2 glass-effect rounded-xl">
               <Briefcase className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-white">Resume Parser & Job Matcher</h1>
+            <h1 className="text-xl font-bold text-white">Remote Ready</h1>
           </div>
           <button
             className="modern-button-outline text-white"
@@ -695,11 +721,10 @@ export default function ResumeJobMatcher() {
 
                 {/* Export Options */}
                 <div className="flex justify-center space-x-4 pt-8">
-                  <button className="modern-button-outline text-white flex items-center space-x-2">
-                    <Download className="h-4 w-4" />
-                    <span>Export to PDF</span>
-                  </button>
-                  <button className="modern-button-outline text-white flex items-center space-x-2">
+                  <button
+                    className="modern-button-outline text-white flex items-center space-x-2"
+                    onClick={() => handleExport('csv')}
+                  >
                     <Download className="h-4 w-4" />
                     <span>Export to CSV</span>
                   </button>
